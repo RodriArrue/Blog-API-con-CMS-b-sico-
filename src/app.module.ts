@@ -2,6 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
+import { UsersModule } from './users/users.module';
+import { CategoriesModule } from './categories/categories.module';
+import { TagsModule } from './tags/tags.module';
+import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -27,6 +32,13 @@ import databaseConfig from './config/database.config';
         synchronize: true, // Solo para desarrollo
       }),
     }),
+
+    // Módulos de la aplicación
+    UsersModule,
+    CategoriesModule,
+    TagsModule,
+    PostsModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
