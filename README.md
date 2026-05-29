@@ -23,6 +23,7 @@ API REST para un blog con sistema de gestión de contenido (CMS) básico, constr
 - **Framework:** NestJS 11
 - **ORM:** TypeORM
 - **Base de datos:** PostgreSQL 16
+- **Auth:** JWT + Passport
 - **Lenguaje:** TypeScript
 
 ## Requisitos previos
@@ -67,34 +68,51 @@ npm run start:dev
 
 ```
 src/
+├── auth/                      # Autenticación JWT
+│   ├── decorators/
+│   │   ├── get-user.decorator.ts
+│   │   └── roles.decorator.ts
+│   ├── dto/
+│   │   ├── login.dto.ts
+│   │   └── register.dto.ts
+│   ├── guards/
+│   │   ├── jwt-auth.guard.ts
+│   │   └── roles.guard.ts
+│   ├── interfaces/
+│   │   └── jwt-payload.interface.ts
+│   ├── strategies/
+│   │   └── jwt.strategy.ts
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   └── auth.service.ts
 ├── common/                    # Utilidades compartidas
 │   ├── dto/
-│   │   └── pagination.dto.ts  # DTO de paginación
+│   │   └── pagination.dto.ts
 │   ├── filters/
 │   │   └── http-exception.filter.ts
 │   └── interceptors/
 │       └── transform.interceptor.ts
 ├── config/
-│   └── database.config.ts     # Configuración de PostgreSQL
+│   └── database.config.ts
 ├── users/
 │   ├── entities/
-│   │   └── user.entity.ts     # Entidad User (admin, editor, reader)
+│   │   └── user.entity.ts     # Roles: admin, editor, reader
 │   └── users.module.ts
 ├── categories/
 │   ├── entities/
-│   │   └── category.entity.ts # Entidad Category (OneToMany → Post)
+│   │   └── category.entity.ts
 │   └── categories.module.ts
 ├── tags/
 │   ├── entities/
-│   │   └── tag.entity.ts      # Entidad Tag (ManyToMany ↔ Post)
+│   │   └── tag.entity.ts
 │   └── tags.module.ts
 ├── posts/
 │   ├── entities/
-│   │   └── post.entity.ts     # Entidad Post (relaciones a User, Category, Tags, Comments)
+│   │   └── post.entity.ts
 │   └── posts.module.ts
 ├── comments/
 │   ├── entities/
-│   │   └── comment.entity.ts  # Entidad Comment (ManyToOne → Post)
+│   │   └── comment.entity.ts
 │   └── comments.module.ts
 ├── app.module.ts
 └── main.ts
@@ -137,9 +155,49 @@ npm run test         # Tests unitarios
 npm run test:e2e     # Tests e2e
 ```
 
-## Endpoints (próximamente)
+## Endpoints
 
-Los endpoints CRUD se implementarán en las siguientes PRs.
+### Auth (`/api/auth`)
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/auth/register` | Registrar nuevo usuario | ❌ |
+| `POST` | `/auth/login` | Iniciar sesión | ❌ |
+| `GET` | `/auth/profile` | Obtener perfil del usuario autenticado | ✅ JWT |
+
+#### Registro
+
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "email": "admin@blog.com",
+    "password": "password123"
+  }'
+```
+
+#### Login
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@blog.com",
+    "password": "password123"
+  }'
+```
+
+#### Perfil (requiere token)
+
+```bash
+curl http://localhost:3000/api/auth/profile \
+  -H "Authorization: Bearer <tu-token-jwt>"
+```
+
+### Demás endpoints
+
+Los endpoints CRUD de Categories, Tags, Posts y Comments se implementarán en las siguientes PRs.
 
 ## Licencia
 
