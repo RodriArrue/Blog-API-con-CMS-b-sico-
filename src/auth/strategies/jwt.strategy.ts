@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
+// Valida el token JWT y carga el usuario en la request
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -21,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  // Passport llama a este método con el payload decodificado
   async validate(payload: JwtPayload): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { id: payload.sub },

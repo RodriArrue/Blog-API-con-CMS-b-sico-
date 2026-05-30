@@ -20,15 +20,13 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /**
-   * Registrar un nuevo usuario
-   */
+  // Registra un usuario nuevo y devuelve el token
   async register(
     registerDto: RegisterDto,
   ): Promise<{ user: Partial<User>; accessToken: string }> {
     const { username, email, password } = registerDto;
 
-    // Verificar si el email o username ya existen
+    // Verificar duplicados
     const existingUser = await this.usersRepository.findOne({
       where: [{ email }, { username }],
     });
@@ -41,11 +39,9 @@ export class AuthService {
       );
     }
 
-    // Hashear la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Crear el usuario
     const user = this.usersRepository.create({
       username,
       email,
@@ -54,7 +50,6 @@ export class AuthService {
 
     await this.usersRepository.save(user);
 
-    // Generar el token JWT
     const accessToken = this.generateToken(user);
 
     return {
@@ -63,15 +58,13 @@ export class AuthService {
     };
   }
 
-  /**
-   * Login de usuario
-   */
+  // Autentica al usuario y devuelve el token
   async login(
     loginDto: LoginDto,
   ): Promise<{ user: Partial<User>; accessToken: string }> {
     const { email, password } = loginDto;
 
-    // Buscar el usuario con el password (que normalmente está excluido con select: false)
+    // Traer el password explícitamente (está excluido por defecto en la entidad)
     const user = await this.usersRepository.findOne({
       where: { email },
       select: { id: true, username: true, email: true, password: true, role: true, createdAt: true },
@@ -81,14 +74,12 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Verificar la contraseña
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Generar el token JWT
     const accessToken = this.generateToken(user);
 
     return {
@@ -97,9 +88,7 @@ export class AuthService {
     };
   }
 
-  /**
-   * Obtener el perfil del usuario autenticado
-   */
+  // Devuelve los datos del usuario autenticado
   async getProfile(userId: string): Promise<Partial<User>> {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
@@ -112,9 +101,7 @@ export class AuthService {
     return this.sanitizeUser(user);
   }
 
-  /**
-   * Generar token JWT
-   */
+  // Genera el JWT con los datos del usuario
   private generateToken(user: User): string {
     const payload: JwtPayload = {
       sub: user.id,
@@ -125,9 +112,7 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  /**
-   * Eliminar campos sensibles del usuario
-   */
+  // Quita el password antes de devolver el usuario
   private sanitizeUser(user: User): Partial<User> {
     const { password, ...sanitized } = user;
     return sanitized;

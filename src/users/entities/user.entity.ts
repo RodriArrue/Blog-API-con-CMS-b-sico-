@@ -41,7 +41,7 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  // Un usuario puede crear muchos posts
+  // Posts creados por el usuario
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 }

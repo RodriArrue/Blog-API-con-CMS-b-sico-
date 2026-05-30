@@ -18,29 +18,20 @@ import { User } from '../users/entities/user.entity';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  /**
-   * POST /api/auth/register
-   * Registrar un nuevo usuario
-   */
+  // POST /api/auth/register
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
-  /**
-   * POST /api/auth/login
-   * Iniciar sesión
-   */
+  // POST /api/auth/login
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  /**
-   * GET /api/auth/profile
-   * Obtener perfil del usuario autenticado
-   */
+  // GET /api/auth/profile (requiere JWT)
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@GetUser() user: User) {

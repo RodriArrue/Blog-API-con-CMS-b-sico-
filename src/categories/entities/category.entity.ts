@@ -28,7 +28,7 @@ export class Category {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  // Una categoría puede tener muchos posts
+  // Posts de esta categoría
   @OneToMany(() => Post, (post) => post.category)
   posts: Post[];
 }

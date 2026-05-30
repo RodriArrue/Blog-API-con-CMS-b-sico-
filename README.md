@@ -99,9 +99,14 @@ src/
 │   │   └── user.entity.ts     # Roles: admin, editor, reader
 │   └── users.module.ts
 ├── categories/
+│   ├── dto/
+│   │   ├── create-category.dto.ts
+│   │   └── update-category.dto.ts
 │   ├── entities/
 │   │   └── category.entity.ts
-│   └── categories.module.ts
+│   ├── categories.controller.ts
+│   ├── categories.module.ts
+│   └── categories.service.ts  # Usa QueryBuilder
 ├── tags/
 │   ├── entities/
 │   │   └── tag.entity.ts
@@ -195,9 +200,40 @@ curl http://localhost:3000/api/auth/profile \
   -H "Authorization: Bearer <tu-token-jwt>"
 ```
 
+### Categories (`/api/categories`)
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/categories` | Listar categorías (paginado) | ❌ |
+| `GET` | `/categories/:id` | Obtener categoría por ID | ❌ |
+| `GET` | `/categories/slug/:slug` | Obtener categoría por slug | ❌ |
+| `POST` | `/categories` | Crear categoría | ✅ Admin/Editor |
+| `PATCH` | `/categories/:id` | Actualizar categoría | ✅ Admin/Editor |
+| `DELETE` | `/categories/:id` | Eliminar categoría | ✅ Admin |
+
+#### Crear categoría
+
+```bash
+curl -X POST http://localhost:3000/api/categories \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <tu-token-jwt>" \
+  -d '{
+    "name": "Tecnología",
+    "description": "Posts sobre desarrollo y tech"
+  }'
+```
+
+> El `slug` se genera automáticamente a partir del `name` (ej: "Tecnología" → "tecnologia")
+
+#### Listar con paginación
+
+```bash
+curl "http://localhost:3000/api/categories?page=1&limit=10"
+```
+
 ### Demás endpoints
 
-Los endpoints CRUD de Categories, Tags, Posts y Comments se implementarán en las siguientes PRs.
+Los endpoints CRUD de Tags, Posts y Comments se implementarán en las siguientes PRs.
 
 ## Licencia
 

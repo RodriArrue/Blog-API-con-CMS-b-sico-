@@ -8,6 +8,6 @@ export default registerAs('database', () => ({
   password: process.env.DB_PASSWORD || 'blog_password_123',
   database: process.env.DB_NAME || 'blog_api',
   autoLoadEntities: true,
-  synchronize: true, // Solo para desarrollo — en producción usar migraciones
+  synchronize: true, // Solo en desarrollo
   logging: process.env.NODE_ENV === 'development',
 }));
