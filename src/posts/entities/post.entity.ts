@@ -57,7 +57,7 @@ export class Post {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  // Relación ManyToOne → User (autor)
+  // Autor del post
   @ManyToOne(() => User, (user) => user.posts, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'author_id' })
   author: User;
@@ -65,7 +65,7 @@ export class Post {
   @Column({ name: 'author_id', nullable: true })
   authorId: string;
 
-  // Relación ManyToOne → Category
+  // Categoría del post
   @ManyToOne(() => Category, (category) => category.posts, {
     onDelete: 'SET NULL',
     nullable: true,
@@ -76,7 +76,7 @@ export class Post {
   @Column({ name: 'category_id', nullable: true })
   categoryId: string;
 
-  // Relación ManyToMany ↔ Tags (owner side)
+  // Tags asociados (lado owner de la relación M:M)
   @ManyToMany(() => Tag, (tag) => tag.posts, { cascade: true })
   @JoinTable({
     name: 'post_tags',
@@ -85,7 +85,7 @@ export class Post {
   })
   tags: Tag[];
 
-  // Relación OneToMany → Comments
+  // Comentarios del post
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
 }

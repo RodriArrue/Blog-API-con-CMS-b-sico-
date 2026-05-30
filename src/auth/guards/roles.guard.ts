@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { UserRole } from '../../users/entities/user.entity';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
+// Verifica que el usuario tenga alguno de los roles requeridos
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -18,7 +19,7 @@ export class RolesGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    // Si no hay roles requeridos, permitir acceso
+    // Sin roles definidos = acceso libre
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }

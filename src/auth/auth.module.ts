@@ -10,13 +10,10 @@ import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
-    // Registrar la entidad User para inyectar el Repository
     TypeOrmModule.forFeature([User]),
-
-    // Configurar Passport con JWT como estrategia por defecto
     PassportModule.register({ defaultStrategy: 'jwt' }),
 
-    // Configurar JWT con secret y expiración desde variables de entorno
+    // JWT con secret y expiración desde .env
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

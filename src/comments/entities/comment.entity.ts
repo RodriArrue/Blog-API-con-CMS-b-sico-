@@ -32,7 +32,7 @@ export class Comment {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  // Relación ManyToOne → Post
+  // Post al que pertenece (se borra en cascada)
   @ManyToOne(() => Post, (post) => post.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: Post;

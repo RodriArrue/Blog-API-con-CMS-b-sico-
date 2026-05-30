@@ -11,14 +11,14 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    // Configuración global de variables de entorno
+    // Variables de entorno
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
       envFilePath: '.env',
     }),
 
-    // Configuración de TypeORM con PostgreSQL
+    // Conexión a PostgreSQL
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -30,11 +30,11 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
         autoLoadEntities: true,
-        synchronize: true, // Solo para desarrollo
+        synchronize: true, // Solo en desarrollo
       }),
     }),
 
-    // Módulos de la aplicación
+    // Módulos
     AuthModule,
     UsersModule,
     CategoriesModule,

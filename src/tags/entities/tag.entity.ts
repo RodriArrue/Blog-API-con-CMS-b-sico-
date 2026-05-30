@@ -21,7 +21,7 @@ export class Tag {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  // Relación ManyToMany inversa (el owner está en Post)
+  // Lado inverso de la relación (el owner está en Post)
   @ManyToMany(() => Post, (post) => post.tags)
   posts: Post[];
 }
