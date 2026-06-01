@@ -108,9 +108,14 @@ src/
 │   ├── categories.module.ts
 │   └── categories.service.ts  # Usa QueryBuilder
 ├── tags/
+│   ├── dto/
+│   │   ├── create-tag.dto.ts
+│   │   └── update-tag.dto.ts
 │   ├── entities/
 │   │   └── tag.entity.ts
-│   └── tags.module.ts
+│   ├── tags.controller.ts
+│   ├── tags.module.ts
+│   └── tags.service.ts        # Usa QueryBuilder
 ├── posts/
 │   ├── entities/
 │   │   └── post.entity.ts
@@ -231,9 +236,29 @@ curl -X POST http://localhost:3000/api/categories \
 curl "http://localhost:3000/api/categories?page=1&limit=10"
 ```
 
+### Tags (`/api/tags`)
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/tags` | Listar tags (paginado) | ❌ |
+| `GET` | `/tags/:id` | Obtener tag por ID | ❌ |
+| `GET` | `/tags/slug/:slug` | Obtener tag por slug | ❌ |
+| `POST` | `/tags` | Crear tag | ✅ Admin/Editor |
+| `PATCH` | `/tags/:id` | Actualizar tag | ✅ Admin/Editor |
+| `DELETE` | `/tags/:id` | Eliminar tag | ✅ Admin |
+
+#### Crear tag
+
+```bash
+curl -X POST http://localhost:3000/api/tags \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <tu-token-jwt>" \
+  -d '{ "name": "NestJS" }'
+```
+
 ### Demás endpoints
 
-Los endpoints CRUD de Tags, Posts y Comments se implementarán en las siguientes PRs.
+Los endpoints CRUD de Posts y Comments se implementarán en las siguientes PRs.
 
 ## Licencia
 
