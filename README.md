@@ -87,7 +87,8 @@ src/
 │   └── auth.service.ts
 ├── common/                    # Utilidades compartidas
 │   ├── dto/
-│   │   └── pagination.dto.ts
+│   │   ├── pagination.dto.ts
+│   │   └── cursor-pagination.dto.ts
 │   ├── filters/
 │   │   └── http-exception.filter.ts
 │   └── interceptors/
@@ -108,13 +109,23 @@ src/
 │   ├── categories.module.ts
 │   └── categories.service.ts  # Usa QueryBuilder
 ├── tags/
+│   ├── dto/
+│   │   ├── create-tag.dto.ts
+│   │   └── update-tag.dto.ts
 │   ├── entities/
 │   │   └── tag.entity.ts
-│   └── tags.module.ts
+│   ├── tags.controller.ts
+│   ├── tags.module.ts
+│   └── tags.service.ts        # Usa QueryBuilder
 ├── posts/
+│   ├── dto/
+│   │   ├── create-post.dto.ts   # DTOs anidados (categoryId, tagIds[])
+│   │   └── update-post.dto.ts
 │   ├── entities/
 │   │   └── post.entity.ts
-│   └── posts.module.ts
+│   ├── posts.controller.ts
+│   ├── posts.module.ts
+│   └── posts.service.ts     # Full-text search + cursor pagination
 ├── comments/
 │   ├── entities/
 │   │   └── comment.entity.ts
@@ -231,9 +242,68 @@ curl -X POST http://localhost:3000/api/categories \
 curl "http://localhost:3000/api/categories?page=1&limit=10"
 ```
 
+### Tags (`/api/tags`)
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/tags` | Listar tags (paginado) | ❌ |
+| `GET` | `/tags/:id` | Obtener tag por ID | ❌ |
+| `GET` | `/tags/slug/:slug` | Obtener tag por slug | ❌ |
+| `POST` | `/tags` | Crear tag | ✅ Admin/Editor |
+| `PATCH` | `/tags/:id` | Actualizar tag | ✅ Admin/Editor |
+| `DELETE` | `/tags/:id` | Eliminar tag | ✅ Admin |
+
+#### Crear tag
+
+```bash
+curl -X POST http://localhost:3000/api/tags \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <tu-token-jwt>" \
+  -d '{ "name": "NestJS" }'
+```
+
+### Posts (`/api/posts`)
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/posts` | Listar posts (cursor-based, búsqueda, filtros) | ❌ |
+| `GET` | `/posts/:slug` | Obtener post por slug | ❌ |
+| `POST` | `/posts` | Crear post | ✅ Admin/Editor |
+| `PATCH` | `/posts/:id` | Actualizar post | ✅ Admin/Editor |
+| `DELETE` | `/posts/:id` | Eliminar post | ✅ Admin |
+
+#### Crear post
+
+```bash
+curl -X POST http://localhost:3000/api/posts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <tu-token-jwt>" \
+  -d '{
+    "title": "Mi primer post",
+    "content": "Contenido del post...",
+    "excerpt": "Resumen corto",
+    "status": "published",
+    "categoryId": "<uuid-de-categoria>",
+    "tagIds": ["<uuid-tag-1>", "<uuid-tag-2>"]
+  }'
+```
+
+#### Listar con búsqueda full-text y filtros
+
+```bash
+# Búsqueda full-text
+curl "http://localhost:3000/api/posts?search=nestjs&limit=10"
+
+# Filtrar por categoría
+curl "http://localhost:3000/api/posts?categoryId=<uuid>"
+
+# Paginación cursor-based (usar nextCursor de la respuesta anterior)
+curl "http://localhost:3000/api/posts?cursor=<uuid-ultimo-post>&limit=10"
+```
+
 ### Demás endpoints
 
-Los endpoints CRUD de Tags, Posts y Comments se implementarán en las siguientes PRs.
+Los endpoints CRUD de Comments se implementarán en la siguiente PR.
 
 ## Licencia
 
