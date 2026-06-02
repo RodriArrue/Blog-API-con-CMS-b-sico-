@@ -127,9 +127,14 @@ src/
 │   ├── posts.module.ts
 │   └── posts.service.ts     # Full-text search + cursor pagination
 ├── comments/
+│   ├── dto/
+│   │   ├── create-comment.dto.ts  # DTO anidado (author como sub-objeto)
+│   │   └── update-comment.dto.ts
 │   ├── entities/
 │   │   └── comment.entity.ts
-│   └── comments.module.ts
+│   ├── comments.controller.ts
+│   ├── comments.module.ts
+│   └── comments.service.ts
 ├── app.module.ts
 └── main.ts
 ```
@@ -301,9 +306,38 @@ curl "http://localhost:3000/api/posts?categoryId=<uuid>"
 curl "http://localhost:3000/api/posts?cursor=<uuid-ultimo-post>&limit=10"
 ```
 
-### Demás endpoints
+### Comments (`/api/posts/:postId/comments` y `/api/comments`)
 
-Los endpoints CRUD de Comments se implementarán en la siguiente PR.
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/posts/:postId/comments` | Listar comentarios de un post (paginado) | ❌ |
+| `POST` | `/posts/:postId/comments` | Crear comentario en un post | ❌ |
+| `PATCH` | `/comments/:id` | Editar comentario | ✅ Admin/Editor |
+| `PATCH` | `/comments/:id/approve` | Aprobar comentario | ✅ Admin/Editor |
+| `DELETE` | `/comments/:id` | Eliminar comentario | ✅ Admin |
+
+#### Crear comentario (DTO anidado)
+
+El campo `author` es un **sub-objeto anidado** con validación propia:
+
+```bash
+curl -X POST http://localhost:3000/api/posts/<uuid-del-post>/comments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Excelente artículo!",
+    "author": {
+      "name": "Juan Pérez",
+      "email": "juan@email.com"
+    }
+  }'
+```
+
+#### Aprobar comentario
+
+```bash
+curl -X PATCH http://localhost:3000/api/comments/<uuid>/approve \
+  -H "Authorization: Bearer <tu-token-jwt>"
+```
 
 ## Licencia
 
