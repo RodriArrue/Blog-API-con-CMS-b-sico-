@@ -9,8 +9,12 @@ import {
   Query,
   ParseUUIDPipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CursorPaginationDto } from '../common/dto/cursor-pagination.dto';
@@ -22,7 +26,10 @@ import { UserRole } from '../users/entities/user.entity';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   // GET /api/posts (paginación cursor-based, búsqueda full-text, filtros)
   @Get()
@@ -45,6 +52,24 @@ export class PostsController {
     @GetUser('id') authorId: string,
   ) {
     return this.postsService.create(createPostDto, authorId);
+  }
+
+  // POST /api/posts/:id/image — Subir imagen destacada a Cloudinary
+  @Post(':id/image')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const result = await this.cloudinaryService.uploadImage(file, 'blog-api/posts');
+    const post = await this.postsService.updateFeaturedImage(id, result.secure_url);
+
+    return {
+      imageUrl: result.secure_url,
+      post,
+    };
   }
 
   // PATCH /api/posts/:id (solo admin y editor)

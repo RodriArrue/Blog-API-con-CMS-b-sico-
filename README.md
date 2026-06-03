@@ -63,6 +63,9 @@ npm run start:dev
 | `APP_PORT` | Puerto de la aplicación | `3000` |
 | `JWT_SECRET` | Secret para tokens JWT | — |
 | `JWT_EXPIRATION` | Expiración de tokens JWT | `24h` |
+| `CLOUDINARY_CLOUD_NAME` | Nombre del cloud en Cloudinary | — |
+| `CLOUDINARY_API_KEY` | API key de Cloudinary | — |
+| `CLOUDINARY_API_SECRET` | API secret de Cloudinary | — |
 
 ## Estructura del proyecto
 
@@ -135,6 +138,10 @@ src/
 │   ├── comments.controller.ts
 │   ├── comments.module.ts
 │   └── comments.service.ts
+├── cloudinary/                  # Upload de imágenes
+│   ├── cloudinary.module.ts
+│   ├── cloudinary.provider.ts   # Configuración del SDK
+│   └── cloudinary.service.ts    # Upload con streams
 ├── app.module.ts
 └── main.ts
 ```
@@ -274,6 +281,7 @@ curl -X POST http://localhost:3000/api/tags \
 | `GET` | `/posts` | Listar posts (cursor-based, búsqueda, filtros) | ❌ |
 | `GET` | `/posts/:slug` | Obtener post por slug | ❌ |
 | `POST` | `/posts` | Crear post | ✅ Admin/Editor |
+| `POST` | `/posts/:id/image` | Subir imagen destacada (Cloudinary) | ✅ Admin/Editor |
 | `PATCH` | `/posts/:id` | Actualizar post | ✅ Admin/Editor |
 | `DELETE` | `/posts/:id` | Eliminar post | ✅ Admin |
 
@@ -305,6 +313,16 @@ curl "http://localhost:3000/api/posts?categoryId=<uuid>"
 # Paginación cursor-based (usar nextCursor de la respuesta anterior)
 curl "http://localhost:3000/api/posts?cursor=<uuid-ultimo-post>&limit=10"
 ```
+
+#### Subir imagen destacada
+
+```bash
+curl -X POST http://localhost:3000/api/posts/<uuid-del-post>/image \
+  -H "Authorization: Bearer <tu-token-jwt>" \
+  -F "image=@/ruta/a/imagen.jpg"
+```
+
+> La imagen se sube a Cloudinary, se optimiza automáticamente (máx 1200px, calidad auto) y se guarda la URL en `featuredImage`
 
 ### Comments (`/api/posts/:postId/comments` y `/api/comments`)
 
