@@ -273,6 +273,13 @@ export class PostsService {
     return this.postsRepository.save(post);
   }
 
+  // Actualizar la imagen destacada de un post
+  async updateFeaturedImage(id: string, imageUrl: string): Promise<Post> {
+    const post = await this.findOne(id);
+    post.featuredImage = imageUrl;
+    return this.postsRepository.save(post);
+  }
+
   // Eliminar un post
   async remove(id: string): Promise<void> {
     const post = await this.findOne(id);
