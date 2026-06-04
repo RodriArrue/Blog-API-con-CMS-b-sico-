@@ -13,6 +13,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { PostsService } from './posts.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -23,8 +24,10 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { UserRole } from '../users/entities/user.entity';
+import { CacheInvalidationInterceptor } from '../common/interceptors/cache-invalidation.interceptor';
 
 @Controller('posts')
+@UseInterceptors(CacheInvalidationInterceptor) // Invalida cache en escrituras
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
@@ -33,12 +36,14 @@ export class PostsController {
 
   // GET /api/posts (paginación cursor-based, búsqueda full-text, filtros)
   @Get()
+  @UseInterceptors(CacheInterceptor) // Cachea la respuesta
   async findAll(@Query() query: CursorPaginationDto) {
     return this.postsService.findAll(query);
   }
 
   // GET /api/posts/:slug (buscar por slug)
   @Get(':slug')
+  @UseInterceptors(CacheInterceptor)
   async findBySlug(@Param('slug') slug: string) {
     return this.postsService.findBySlug(slug);
   }
