@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis from '@keyv/redis';
 import databaseConfig from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -32,6 +34,23 @@ import { AuthModule } from './auth/auth.module';
         autoLoadEntities: true,
         synchronize: true, // Solo en desarrollo
       }),
+    }),
+
+    // Cache con Redis
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const redisUrl = configService.get<string>(
+          'REDIS_URL',
+          'redis://localhost:6379',
+        );
+        return {
+          stores: [new KeyvRedis(redisUrl)],
+          ttl: configService.get<number>('CACHE_TTL', 60) * 1000, // En milisegundos
+        };
+      },
     }),
 
     // Módulos

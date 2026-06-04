@@ -66,6 +66,8 @@ npm run start:dev
 | `CLOUDINARY_CLOUD_NAME` | Nombre del cloud en Cloudinary | — |
 | `CLOUDINARY_API_KEY` | API key de Cloudinary | — |
 | `CLOUDINARY_API_SECRET` | API secret de Cloudinary | — |
+| `REDIS_URL` | URL de conexión a Redis | `redis://localhost:6379` |
+| `CACHE_TTL` | Tiempo de vida del cache (segundos) | `60` |
 
 ## Estructura del proyecto
 
@@ -95,7 +97,8 @@ src/
 │   ├── filters/
 │   │   └── http-exception.filter.ts
 │   └── interceptors/
-│       └── transform.interceptor.ts
+│       ├── transform.interceptor.ts
+│       └── cache-invalidation.interceptor.ts
 ├── config/
 │   └── database.config.ts
 ├── users/
@@ -356,6 +359,14 @@ curl -X POST http://localhost:3000/api/posts/<uuid-del-post>/comments \
 curl -X PATCH http://localhost:3000/api/comments/<uuid>/approve \
   -H "Authorization: Bearer <tu-token-jwt>"
 ```
+
+## Cache con Redis
+
+Los endpoints GET de **posts**, **categories** y **tags** están cacheados automáticamente con Redis.
+
+- El cache se invalida automáticamente cuando se crean, actualizan o eliminan recursos
+- TTL configurable vía `CACHE_TTL` (default: 60 segundos)
+- Usa `@nestjs/cache-manager` con `@keyv/redis` como store
 
 ## Licencia
 
