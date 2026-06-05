@@ -44,7 +44,7 @@ npm install
 # Copiar variables de entorno
 cp .env.example .env
 
-# Levantar la base de datos
+# Levantar PostgreSQL + Redis
 docker compose up -d
 
 # Iniciar en modo desarrollo
@@ -367,6 +367,14 @@ Los endpoints GET de **posts**, **categories** y **tags** están cacheados autom
 - El cache se invalida automáticamente cuando se crean, actualizan o eliminan recursos
 - TTL configurable vía `CACHE_TTL` (default: 60 segundos)
 - Usa `@nestjs/cache-manager` con `@keyv/redis` como store
+
+## Documentación Swagger
+
+La API cuenta con documentación interactiva auto-generada con **Swagger / OpenAPI**.
+
+Disponible en: `http://localhost:3000/api/docs`
+
+Desde ahí podés probar todos los endpoints directamente desde el navegador, incluyendo autenticación con JWT.
 
 ## Licencia
 

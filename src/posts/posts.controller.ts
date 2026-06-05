@@ -25,9 +25,12 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { CacheInvalidationInterceptor } from '../common/interceptors/cache-invalidation.interceptor';
+import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 
+@ApiTags('Posts')
+@ApiBearerAuth('JWT')
 @Controller('posts')
-@UseInterceptors(CacheInvalidationInterceptor) // Invalida cache en escrituras
+@UseInterceptors(CacheInvalidationInterceptor)
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
@@ -64,6 +67,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.EDITOR)
   @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
   async uploadImage(
     @Param('id', ParseUUIDPipe) id: string,
     @UploadedFile() file: Express.Multer.File,
