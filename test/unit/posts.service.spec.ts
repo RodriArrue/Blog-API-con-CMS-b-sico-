@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { PostsService } from './posts.service';
-import { Post, PostStatus } from './entities/post.entity';
-import { Tag } from '../tags/entities/tag.entity';
+import { PostsService } from '../../src/posts/posts.service';
+import { Post, PostStatus } from '../../src/posts/entities/post.entity';
+import { Tag } from '../../src/tags/entities/tag.entity';
 
 describe('PostsService', () => {
   let service: PostsService;

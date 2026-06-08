@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
-import { CloudinaryService } from './cloudinary.service';
+import { CloudinaryService } from '../../src/cloudinary/cloudinary.service';
 
 // Mock del SDK de Cloudinary
 jest.mock('cloudinary', () => ({

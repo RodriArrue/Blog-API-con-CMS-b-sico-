@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { CategoriesService } from './categories.service';
-import { Category } from './entities/category.entity';
+import { CategoriesService } from '../../src/categories/categories.service';
+import { Category } from '../../src/categories/entities/category.entity';
 
 describe('CategoriesService', () => {
   let service: CategoriesService;
