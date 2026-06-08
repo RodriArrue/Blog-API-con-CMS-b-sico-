@@ -44,8 +44,8 @@ describe('PostsService', () => {
     content: 'Contenido del post de prueba',
     excerpt: 'Resumen',
     status: PostStatus.DRAFT,
-    featuredImage: null,
-    publishedAt: null,
+    featuredImage: undefined,
+    publishedAt: undefined,
     createdAt: new Date(),
     updatedAt: new Date(),
     authorId: 'uuid-author-1',
@@ -162,7 +162,7 @@ describe('PostsService', () => {
       const publishedPost = {
         ...mockPost,
         status: PostStatus.PUBLISHED,
-        publishedAt: null,
+        publishedAt: undefined,
       };
       mockPostsRepository.create.mockReturnValue(publishedPost);
       mockPostsRepository.save.mockResolvedValue(publishedPost);
